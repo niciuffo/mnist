@@ -75,7 +75,7 @@ struct MNIST_dataset {
  * \param func The functor to create the image object
  */
 template <typename Container>
-bool read_mnist_image_file_flat(Container& images, const std::string& path, std::size_t limit, std::size_t start = 0, int scale_factor = 1) {
+bool read_mnist_image_file_flat(Container& images, const std::string& path, std::size_t limit, std::size_t start = 0, [[maybe_unused]]std::size_t scale_factor = 1) {
     auto buffer = read_mnist_file(path, 0x803);
 
     if (buffer) {
@@ -97,9 +97,10 @@ bool read_mnist_image_file_flat(Container& images, const std::string& path, std:
 
         for (size_t i = 0; i < count; ++i) {
             for (size_t j = 0; j < rows * columns; ++j) {
-                for (int k = 0; k < scale_factor; k++) {
-                    images(i)[j + k] = *image_buffer++;
+                for (size_t k = 0; k < scale_factor; ++k) {
+                    images(i)[j * scale_factor + k] = *image_buffer;
                 }
+                image_buffer++;
             }
         }
 
